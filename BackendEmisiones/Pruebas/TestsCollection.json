@@ -1,0 +1,714 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Pruebas Funcionales Backend",
+    "dateExported": "2024-04-19T12:47:32.481Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Empresa",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.433Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Planta",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.435Z",
+            "sortNum": 15000
+        },
+        {
+            "_id": "86b8fa27-1330-4708-a760-994158085e44",
+            "name": "Sistemas",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.436Z",
+            "sortNum": 17500
+        },
+        {
+            "_id": "8a7a740f-5ddf-4483-846f-e38a6be2ea6c",
+            "name": "Fugitivas",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.434Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "fb73f412-d25b-462a-a63c-a49b0d3e1b8a",
+            "name": "Combustion",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.437Z",
+            "sortNum": 50000
+        },
+        {
+            "_id": "c8684117-1200-4352-8de5-20aa525677a6",
+            "name": "Evidencias",
+            "containerId": "",
+            "created": "2024-04-16T21:11:17.438Z",
+            "sortNum": 60000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "c779988e-34ac-4d69-bb7d-3b222b266dea",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Crear Empresa OK",
+            "url": "https://localhost:7115/api/Empresa",
+            "method": "POST",
+            "sortNum": 7500,
+            "created": "2024-04-16T21:11:17.439Z",
+            "modified": "2024-04-16T21:23:56.809Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"naturaleza\": \"Juridica\",\n  \"identificacion\": \"1234567\",\n  \"ciudad\": \"Bogotá\",\n  \"razonSocial\": \"Equion\",\n  \"direccion\": \"Cra 7 Calle 65\",\n  \"telefono\": \"45676543\",\n  \"nombreContacto\": \"Juan Reyes\",\n  \"cargoContacto\": \"Ing Producción\",\n  \"telContacto\": \"325467382\",\n  \"factorGwp\": 0\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Cófigo de Respuesta 200\", function() {",
+                            "  return tc.response.status == 200;",
+                            "});",
+                            "tc.test(\"Identificación OK\", function(){",
+                            "  return tc.response.json.identificacion == 1234567",
+                            "});",
+                            "",
+                            "tc.setVar(\"EmpresaID\", tc.response.json.id, \"global\");"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "a61bd00e-74fd-4051-b76e-7867bde42bc3",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Crear Empresa Incompleta",
+            "url": "https://localhost:7115/api/Empresa",
+            "method": "POST",
+            "sortNum": 8125,
+            "created": "2024-04-16T21:11:17.441Z",
+            "modified": "2024-04-16T21:19:23.632Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"naturaleza\": \"Juridica\",\n  \"identificacion\": \"1234567\",\n  \"ciudad\": \"Bogotá\",\n  \"direccion\": \"Cra 7 Calle 65\",\n  \"telefono\": \"45676543\",\n  \"nombreContacto\": \"Juan Reyes\",\n  \"cargoContacto\": \"Ing Producción\",\n  \"telContacto\": \"325467382\",\n  \"factorGwp\": 0\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Cófigo de Respuesta 400\", function() {",
+                            "  return tc.response.status == 400;",
+                            "});",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "8e7fb85d-a908-4dc0-a954-7f8cdea4ce6d",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Actualizar Empresa OK",
+            "url": "https://localhost:7115/api/Empresa",
+            "method": "PUT",
+            "sortNum": 9062.5,
+            "created": "2024-04-16T21:11:17.442Z",
+            "modified": "2024-04-16T21:24:23.455Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": {{EmpresaID}},\n  \"naturaleza\": \"Juridica\",\n  \"identificacion\": \"1234567\",\n  \"ciudad\": \"Barranquilla\",\n  \"razonSocial\": \"Okion\",\n  \"direccion\": \"Cra 10 Calle 15\",\n  \"telefono\": \"300098765\",\n  \"nombreContacto\": \"Pedro Lopez\",\n  \"cargoContacto\": \"Ingeniero\",\n  \"telContacto\": \"320909033\",\n  \"factorGwp\": 15\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Cófigo de Respuesta 200\", function() {",
+                            "  return tc.response.status == 200;",
+                            "});",
+                            "tc.test('Ciudad Actualizada', function() {",
+                            "  return tc.response.json.ciudad == \"Barranquilla\"}",
+                            ");",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "0d4baf68-a8cc-40ed-ad80-b4584777fa24",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Actualizar Empresa No Existente",
+            "url": "https://localhost:7115/api/Empresa",
+            "method": "PUT",
+            "sortNum": 9218.8,
+            "created": "2024-04-16T21:11:17.443Z",
+            "modified": "2024-04-16T21:27:54.404Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": 10000,\n  \"naturaleza\": \"Juridica\",\n  \"identificacion\": \"1234567\",\n  \"ciudad\": \"Barranquilla\",\n  \"razonSocial\": \"Okion\",\n  \"direccion\": \"Cra 10 Calle 15\",\n  \"telefono\": \"300098765\",\n  \"nombreContacto\": \"Pedro Lopez\",\n  \"cargoContacto\": \"Ingeniero\",\n  \"telContacto\": \"320909033\",\n  \"factorGwp\": 15\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 404\", function() {",
+                            "  return tc.response.status == 404;",
+                            "});",
+                            "tc.test('Mensaje no encontrado', function(){",
+                            "  return tc.response.text.includes(\"no encontrada\");",
+                            "});",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "3b2710c4-6602-44c1-9a51-146f22c930c8",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Cosultar Empresa por ID OK",
+            "url": "https://localhost:7115/api/Empresa/{{EmpresaID}}",
+            "method": "GET",
+            "sortNum": 9296.9,
+            "created": "2024-04-16T21:11:17.438Z",
+            "modified": "2024-04-16T21:37:00.018Z",
+            "headers": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {",
+                            "  return tc.response.status == 200;",
+                            "}); ",
+                            "tc.test(\"Id Elemnto OK\", function() {",
+                            "  let id = tc.response.json.id;",
+                            "  let value = tc.getVar(\"EmpresaID\");",
+                            "  return id == value;",
+                            "});",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "9fc2622b-5885-498a-8dd0-d8586e41ce18",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Consultar Empresa Por ID No Existente",
+            "url": "https://localhost:7115/api/Empresa/10000",
+            "method": "GET",
+            "sortNum": 9375,
+            "created": "2024-04-16T21:11:17.440Z",
+            "modified": "2024-04-16T21:41:47.250Z",
+            "headers": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 404\", function() {",
+                            "  return tc.response.status == 404;",
+                            "});",
+                            "tc.test('Mensaje no encontrado', function(){",
+                            "  return tc.response.text.includes(\"no encontrada\");",
+                            "});",
+                            "",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "ff01c4ad-305e-4710-9136-ffd1e3992958",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "2576d730-f4ea-4445-949a-845339a08a28",
+            "name": "Consultar Todas las Empresas",
+            "url": "https://localhost:7115/api/Empresa/GetAll",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-04-16T21:11:17.434Z",
+            "modified": "2024-04-16T21:43:47.658Z",
+            "headers": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {\r",
+                            "  return tc.response.status == 200;\r",
+                            "});\r",
+                            "tc.test('Varios elementos', function() {  \r",
+                            "  return tc.response.json.length > 0;\r",
+                            "});"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "fcce7e89-6f24-4647-b537-6bf0631f9c77",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "8a7a740f-5ddf-4483-846f-e38a6be2ea6c",
+            "name": "Insertar Emision Fugitiva OK",
+            "url": "https://localhost:7115/api/EmisionFugitiva",
+            "method": "POST",
+            "sortNum": 15000,
+            "created": "2024-04-16T21:11:17.436Z",
+            "modified": "2024-04-19T12:39:35.193Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"factorEmisionId\": {{FactorEmisionID}},\n  \"consecutivo\": \"503\",\n  \"tag\": \"Compresor C601C\",\n  \"nombre\": \"Cuerpo de la Valbula\",\n  \"descripcion\": \"Válvula de control de 2inch línea de gas combustible\",\n  \"horasOperacion\": 4151,\n  \"tamano\": \"2 inch\",\n  \"presion\": 2.1,\n  \"temperatura\": 42.5,\n  \"fuga\": true,\n  \"caudalEmision\": 9.6,\n  \"factorGwp\": 28,\n  \"observacion\": \"Ninguna\",\n  \"fechaDeteccion\": \"2019-05-13T21:06:47.913Z\",\n  \"fechaReparacion\": \"2024-04-13T21:06:47.913Z\",\n  \"sistemaId\": {{SistemaID}},\n  \"tipoFuenteId\": {{TipoFuenteID}}\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {",
+                            "  return tc.response.status == 200;",
+                            "});",
+                            "tc.test(\"Atributos Creados OK\", function() {",
+                            "    let horasOPOK = tc.response.json.horasOperacion == 4151;",
+                            "    let fugaOK = tc.response.json.fuga == true;",
+                            "    return horasOPOK && fugaOK;",
+                            "});",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "26684d49-a5d6-47b7-af24-b1e80d79de8d",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "8a7a740f-5ddf-4483-846f-e38a6be2ea6c",
+            "name": "Consultar Emision Por ID",
+            "url": "https://localhost:7115/api/EmisionFugitiva/{{EmisionFGID}}",
+            "method": "GET",
+            "sortNum": 37500,
+            "created": "2024-04-16T21:11:17.435Z",
+            "modified": "2024-04-16T21:11:17.435Z",
+            "headers": [],
+            "params": [],
+            "tests": [
+                {
+                    "type": "res-code",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "200"
+                }
+            ],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "53aed42f-ca97-472d-a9c0-8d6a9ee5a5e9",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "8a7a740f-5ddf-4483-846f-e38a6be2ea6c",
+            "name": "Consultar Emisiones por Sistema",
+            "url": "https://localhost:7115/api/EmisionFugitiva/GetSet/1",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-04-16T21:11:17.437Z",
+            "modified": "2024-04-16T21:11:17.437Z",
+            "headers": [],
+            "params": [],
+            "tests": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "b605638b-0716-4b41-ab60-8d2de2c43398",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Crear Planta OK",
+            "url": "https://localhost:7115/api/Planta",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2024-04-16T21:11:17.444Z",
+            "modified": "2024-04-16T22:14:41.242Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"nombre\": \"Planta A\",\n  \"ciudad\": \"Bucaramanga\",\n  \"empresaId\": {{EmpresaID}}\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {\r",
+                            "  return tc.response.status == 200;\r",
+                            "});\r",
+                            "tc.test('Ciudad OK', function() {\r",
+                            "  return tc.response.json.ciudad == \"Bucaramanga\"}\r",
+                            ");\r",
+                            "tc.setVar(\"PlantaID\", tc.response.json.id, \"global\");\r",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "a78199b2-2b2b-42f7-8058-dc01ab5364e6",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "86b8fa27-1330-4708-a760-994158085e44",
+            "name": "Agregar Sistema OK",
+            "url": "https://localhost:7115/api/Sistema",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2024-04-16T21:11:17.445Z",
+            "modified": "2024-04-17T13:33:57.233Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"nombre\": \"Sistema 1\",\n  \"descripcion\": \"Sistema 1 Planta 1\",\n  \"plantaId\": 1\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);",
+                            "",
+                            "tc.setVar(\"SistemaID\", tc.response.json.id, \"global\");"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "d5e0d99d-4bc6-4ccb-adca-8f20e89bc8fa",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Crear Planta Empresa No Existente",
+            "url": "https://localhost:7115/api/Planta",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2024-04-16T22:09:26.119Z",
+            "modified": "2024-04-16T22:16:49.643Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"nombre\": \"Planta A\",\n  \"ciudad\": \"Bucaramanga\",\n  \"empresaId\": 10000\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 404\", function() {\r",
+                            "  return tc.response.status == 404;\r",
+                            "});\r",
+                            "tc.test('Mensaje no encontrado', function(){\r",
+                            "  return tc.response.text.includes(\"No existe\");\r",
+                            "});\r",
+                            "\r",
+                            ""
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "e58506df-1ce5-41c2-b534-2cda0c845d82",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "fb73f412-d25b-462a-a63c-a49b0d3e1b8a",
+            "name": "Crear Emision Combustion OK",
+            "url": "https://localhost:7115/api/EmisionCombustion",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2024-04-16T21:11:17.446Z",
+            "modified": "2024-04-16T21:11:17.446Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"consecutivo\": \"12\",\r\n  \"tag\": \"234\",\r\n  \"nombre\": \"Emision Combustion Alfa\",\r\n  \"descripcion\": \"Emision Combustion Alfa - Planta 1\",\r\n  \"horasOperacion\": 234,\r\n  \"eficienciaCombustion\": 2.1,\r\n  \"observacion\": \"Ninguna\",\r\n  \"sistemaId\": 1,\r\n  \"tipoFuenteId\": 1,\r\n  \"factorEmisionId\": 1\r\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "e157dc72-641b-424c-ab62-5e9ca4b33343",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Consultar Planta OK",
+            "url": "https://localhost:7115/api/Planta/{{PlantaID}}",
+            "method": "GET",
+            "sortNum": 140000,
+            "created": "2024-04-16T21:11:17.447Z",
+            "modified": "2024-04-16T22:17:06.985Z",
+            "headers": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "let rta = tc.response.json;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);",
+                            "tc.test(\"Verificacion de valores\", function () {",
+                            "  let rta = tc.response.json;",
+                            "  let nombreOK = rta.nombre == \"Planta A\"",
+                            "  let ciudadOK = rta.ciudad == \"Bogotá\";",
+                            "  return nombreOK && ciudadOK;",
+                            "});"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "7eaf3c89-84ec-4c37-8955-f5db9366fcc4",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Consultar Planta No Existente",
+            "url": "https://localhost:7115/api/Planta/4000",
+            "method": "GET",
+            "sortNum": 150000,
+            "created": "2024-04-16T21:11:17.448Z",
+            "modified": "2024-04-16T21:11:17.448Z",
+            "headers": [],
+            "params": [],
+            "tests": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 404;",
+                            "let rta = tc.response.text;",
+                            "",
+                            "tc.test(\"Cófigo de Respuesta 404\", success);",
+                            "tc.test(\"Mensaje correcto\", function() {",
+                            "  let msgOK = rta.includes(\"no encontrada\");",
+                            "  return msgOK;",
+                            "})"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "be416150-d172-4bf7-84bb-7acfcbeba2ca",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "c8684117-1200-4352-8de5-20aa525677a6",
+            "name": "Crear Evidencia OK",
+            "url": "https://localhost:7115/api/Evidencia",
+            "method": "POST",
+            "sortNum": 150000,
+            "created": "2024-04-16T21:11:17.449Z",
+            "modified": "2024-04-16T21:11:17.449Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"usuarioDeteccionId\": \"1\",\r\n  \"fechaDeteccion\": \"2024-04-14T21:26:53.613Z\",\r\n  \"fotoAntes\": true,\r\n  \"video\": false,\r\n  \"fechaReparacion\": \"2024-04-14T21:26:53.613Z\",\r\n  \"fotoDespues\": false,\r\n  \"idUsuarioReparacion\": \"1\",\r\n  \"emisionFugitivaId\": 2\r\n}",
+                "form": []
+            },
+            "tests": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "0c4f734b-563b-4956-a64a-7c1bc803c79f",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "c8684117-1200-4352-8de5-20aa525677a6",
+            "name": "Consultar Foto Antes",
+            "url": "https://localhost:7115/Imagen/Antes/1",
+            "method": "GET",
+            "sortNum": 160000,
+            "created": "2024-04-16T21:11:17.450Z",
+            "modified": "2024-04-16T21:11:17.450Z",
+            "headers": [],
+            "params": [],
+            "tests": [
+                {
+                    "type": "Content-Type",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "image/jpeg"
+                }
+            ]
+        },
+        {
+            "_id": "d27b6555-1bd4-4b87-a125-c5c902237df9",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "c8684117-1200-4352-8de5-20aa525677a6",
+            "name": "Consultar Foto Despues",
+            "url": "https://localhost:7115/Imagen/Despues/1",
+            "method": "GET",
+            "sortNum": 170000,
+            "created": "2024-04-16T21:11:17.451Z",
+            "modified": "2024-04-16T21:11:17.451Z",
+            "headers": [],
+            "params": [],
+            "tests": [
+                {
+                    "type": "Content-Type",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "image/jpeg"
+                }
+            ]
+        },
+        {
+            "_id": "fa7d5710-1c93-4d17-923c-d7ae59d3e813",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "fb73f412-d25b-462a-a63c-a49b0d3e1b8a",
+            "name": "Consultar Emision Combustion por ID",
+            "url": "https://localhost:7115/api/EmisionCombustion/1",
+            "method": "GET",
+            "sortNum": 170000,
+            "created": "2024-04-16T21:11:17.452Z",
+            "modified": "2024-04-16T21:11:17.452Z",
+            "headers": [],
+            "params": [],
+            "tests": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "let success = tc.response.status == 200;",
+                            "tc.test(\"Cófigo de Respuesta 200\", success);"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "5d43ffb6-771e-4c20-b4d6-1cbbb80616d4",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Consultar Plantas de una Empresa",
+            "url": "https://localhost:7115/api/Planta/GetSet/{{EmpresaID}}",
+            "method": "GET",
+            "sortNum": 180000,
+            "created": "2024-04-16T22:53:02.545Z",
+            "modified": "2024-04-16T22:54:45.439Z",
+            "headers": [],
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {\r",
+                            "  return tc.response.status == 200;\r",
+                            "});\r",
+                            "tc.test('Varios elementos', function() {  \r",
+                            "    return tc.response.json.length > 0;\r",
+                            "});"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "d1a0f5f8-dc5a-429c-8f68-1768bfb06ff1",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Actualizar Planta OK",
+            "url": "https://localhost:7115/api/Planta/",
+            "method": "PUT",
+            "sortNum": 190000,
+            "created": "2024-04-16T23:00:12.152Z",
+            "modified": "2024-04-16T23:02:22.067Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\" : {{PlantaID}},\n  \"nombre\": \"Planta A\",\n  \"ciudad\": \"Barranquilla\",\n  \"empresaId\": {{EmpresaID}}\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 200\", function() {\r",
+                            "  return tc.response.status == 200;\r",
+                            "});\r",
+                            "tc.test('Ciudad Actualizada', function() {\r",
+                            "  return tc.response.json.ciudad == \"Barranquilla\"}\r",
+                            ");"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "9985ea3b-8530-4719-bdc1-132f7247d3f2",
+            "colId": "d62f7715-f724-41ab-86af-6aa6453574dd",
+            "containerId": "1c744d27-7f6b-4ccb-9776-5c90a064e7b8",
+            "name": "Actualizar Planta No Existente",
+            "url": "https://localhost:7115/api/Planta/",
+            "method": "PUT",
+            "sortNum": 200000,
+            "created": "2024-04-16T23:02:38.633Z",
+            "modified": "2024-04-16T23:03:34.908Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\" : 10000,\n  \"nombre\": \"Planta A\",\n  \"ciudad\": \"Barranquilla\",\n  \"empresaId\": {{EmpresaID}}\n}",
+                "form": []
+            },
+            "postReq": {
+                "inlineScripts": [
+                    {
+                        "script": [
+                            "tc.test(\"Código de Respuesta 404\", function() {\r",
+                            "  return tc.response.status == 404;\r",
+                            "});\r",
+                            "tc.test('Mensaje no encontrado', function(){\r",
+                            "  return tc.response.text.includes(\"no encontrada\");\r",
+                            "});"
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "settings": {
+        "envId": "2ccb852c-7710-4b2a-9ec7-072b8c843a17",
+        "runOptions": {
+            "delay": 100,
+            "iterations": 1,
+            "dataFilePath": ""
+        }
+    }
+}
