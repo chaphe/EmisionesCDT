@@ -86,13 +86,14 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            Empresa empresaDB = null;
+            Empresa empresaDB = _fixture.GetLastEmpresa();
+            /*
             using (var scope = _fixture.Factory.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 empresaDB = context.Empresas.OrderBy(e => e.Id).Last();                
             }
-
+            */
 
             var empresa = new Empresa //DTO que se envia como JSON
             {

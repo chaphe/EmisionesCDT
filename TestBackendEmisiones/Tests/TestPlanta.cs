@@ -45,16 +45,12 @@ namespace TestEmisionesCDT.Tests
 
             // Evalua que el çodigo HTTP de respuesta es 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var plantaDB = context.Plantas.Find(plantaRta.Id);
-
-                // Evalua que los atribitos en la BD son igu
-                Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
-                Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
-                Assert.Equal(plantaDB.EmpresaId, plantaRta.EmpresaId);
-            }
+            var plantaDB = _fixture.GetPlantaPorId(plantaRta.Id);
+ 
+            // Valida que los atribitos son iguales a la BD
+            Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
+            Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
+            Assert.Equal(plantaDB.EmpresaId, plantaRta.EmpresaId);
         }
 
         [Fact(DisplayName = "Crear Planta Empresa No Existente")]
@@ -70,7 +66,8 @@ namespace TestEmisionesCDT.Tests
             };
 
             // Act
-            var response = await client.PostAsync("api/Planta", HttpHelper.GetJsonHttpContent(planta));
+            var content = HttpHelper.GetJsonHttpContent(planta);
+            var response = await client.PostAsync("api/Planta", content);
             var textoStr = response.Content.ReadAsStringAsync().Result;
 
 
@@ -84,13 +81,7 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            Planta plantaDB = null;
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                plantaDB = context.Plantas.OrderBy(p => p.Id).Last();
-            }
-
+            Planta plantaDB = _fixture.GetRandomPlanta();
 
             var planta = new Planta //DTO que se envia como JSON
             {
@@ -101,45 +92,44 @@ namespace TestEmisionesCDT.Tests
             };
 
             // Act
-            var response = await client.PutAsync("api/Planta", HttpHelper.GetJsonHttpContent(planta));
+            var content = HttpHelper.GetJsonHttpContent(planta);
+            var response = await client.PutAsync("api/Planta", content);
             var plantaStr = response.Content.ReadAsStringAsync();
             var plantaRta = JsonConvert.DeserializeObject<Planta>(plantaStr.Result);
-
-
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                plantaDB = context.Plantas.Find(planta.Id);
-            }
+            plantaDB = _fixture.GetPlantaPorId(plantaDB.Id);
+            
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
             Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
-            Assert.Equal("Barranquilla", plantaRta.Ciudad);
+            Assert.Equal(plantaDB.EmpresaId, plantaRta.EmpresaId);
+            Assert.Equal(planta.Nombre, plantaRta.Nombre);
+            Assert.Equal(planta.Ciudad, plantaRta.Ciudad);
         }
 
         [Fact(DisplayName = "Actualizar Planta No Existente")]
         public async Task ActualizarPlantaNoExistente()
         {
             // Arrange
-            var client = _fixture.Client;
-            Planta plantaDB = null;
+            var client = _fixture.Client;          
 
             var planta = new Planta //DTO que se envia como JSON
             {
-                Id = 10000,
+                Id = 10000, //ID no exixtente
                 Nombre = "Planta de Acacias",
                 Ciudad = "Barranquilla",
                 EmpresaId = 1
             };
 
             // Act
-            var response = await client.PutAsync("api/Planta", HttpHelper.GetJsonHttpContent(planta));
-            var plantaStr = response.Content.ReadAsStringAsync().Result;
+            var content = HttpHelper.GetJsonHttpContent(planta);
+            var response = await client.PutAsync("api/Planta", content);
+            var textoRta = response.Content.ReadAsStringAsync().Result;
 
+            // Validad que la respuesta HTTP es 404 (Not Found)
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.Contains("no encontrada", plantaStr);
-
+            // Valida que eL texto de respuesta contiene "no encontrada"
+            Assert.Contains("no encontrada", textoRta);
         }
 
         [Fact(DisplayName = "Consultar Planta OK")]
@@ -147,23 +137,19 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
+            var plantaDB = _fixture.GetRandomPlanta();
             // Act
-            var response = await client.GetAsync("api/Planta/1");
+            var response = await client.GetAsync("api/Planta/" + plantaDB.Id);
             // Assert
             var plantaStr = response.Content.ReadAsStringAsync();
             var plantaRta = JsonConvert.DeserializeObject<Planta>(plantaStr.Result);
 
-            // Evalua que el código de respuesta sea 200 (OK)
+            // Valida que el código de respuesta sea 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var plantaDB = context.Plantas.Find(1);
-                // Evalua que los atributos corresponden a los de la BD
-                Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
-                Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
-                Assert.Equal(plantaDB.Id, plantaRta.Id);
-            }
+            // Valida que los atributos corresponden a los de la BD
+            Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
+            Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
+            Assert.Equal(plantaDB.Id, plantaRta.Id);
         }
 
         [Fact(DisplayName = "Consultar Planta No Existente")]
@@ -176,7 +162,7 @@ namespace TestEmisionesCDT.Tests
             // Assert
             var textoRta = response.Content.ReadAsStringAsync().Result;
 
-            // Evalua que el código de respuesta sea 404 (No encontrado)
+            // Valida que el código de respuesta sea 404 (No encontrado)
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Contains("no encontrada", textoRta);
         }
@@ -186,34 +172,20 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var idEmpresa = 1;
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                Random random = new Random();
-                idEmpresa = random.Next(1, _fixture.MaxIdEmpresa(context.Empresas) + 1); 
-            }
+            var empresaDB = _fixture.GetRandomEmpresa();
+
 
             // Act
-            var response = await client.GetAsync("api/Planta/GetSet/" + idEmpresa);
+            var response = await client.GetAsync("api/Planta/GetSet/" + empresaDB.Id);
 
             // Assert
-
+            // Valida que el codigo de respuesta sea 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var plantasRta = JsonConvert.DeserializeObject<List<Planta>>(content);
-
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var plantasDB = context.Plantas.Where(p=> p.EmpresaId==idEmpresa).ToList();
-
-                // Evalua que el numero de empresas es igual al de la BD
-                Assert.Equal(plantasDB.Count(), plantasRta.Count());
-                //Assert.Equal(plantasDB, plantasRta);
-            }
+            var plantasDB = _fixture.GetPlantasPorEmpresa(empresaDB.Id);
+            // Evalua que el numero de empresas es igual al de la BD
+            Assert.Equal(plantasDB.Count(), plantasRta.Count());
         }
-
-
     }
 }

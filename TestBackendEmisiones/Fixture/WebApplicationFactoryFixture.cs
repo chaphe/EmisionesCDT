@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Numerics;
 
 
 namespace TestEmisionesCDT.Fixture
@@ -60,14 +61,12 @@ namespace TestEmisionesCDT.Fixture
                 await cntx.SaveChangesAsync();
                 await cntx.Plantas.AddRangeAsync(DataFixture.GetPlantas(20, MaxIdEmpresa(cntx.Empresas)));
                 await cntx.SaveChangesAsync();
-                await cntx.Sistemas.AddRangeAsync(DataFixture.GetSistemas(40, MaxIdEmpresa(cntx.Empresas)));
+                await cntx.Sistemas.AddRangeAsync(DataFixture.GetSistemas(80, MaxIdPlanta(cntx.Plantas)));
                 await cntx.SaveChangesAsync();
-
-
             }
         }
 
-        public int MaxIdEmpresa(DbSet<Empresa> set)
+        private int MaxIdEmpresa(DbSet<Empresa> set)
         {
             return set.Select(x => x.Id)
                     .DefaultIfEmpty() // Maneja el caso cuando no hay elementos en la tabla
@@ -86,6 +85,105 @@ namespace TestEmisionesCDT.Fixture
             return set.Select(x => x.Id)
                     .DefaultIfEmpty() // Maneja el caso cuando no hay elementos en la tabla
                     .Max();
+        }
+
+        public Empresa GetLastEmpresa()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Empresas.OrderBy(e => e.Id).Last();
+            }
+        }
+
+        public Empresa GetRandomEmpresa()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                var randomElement = cntx.Empresas.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public Planta GetLastPlanta()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Plantas.OrderBy(p => p.Id).Last();
+            }
+        }
+
+        public Planta GetRandomPlanta()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                var randomElement = cntx.Plantas.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public Planta GetPlantaPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Plantas.Find(id);
+            }
+        }
+
+        public List<Planta> GetPlantasPorEmpresa(int idEmpresa)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                return cntx.Plantas.Where(p => p.EmpresaId == idEmpresa).ToList();
+            }
+        }
+
+        public Sistema GetSistemaPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Sistemas.Find(id);
+            }
+        }
+
+        public Sistema GetRandomSistema()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                var randomElement = cntx.Sistemas.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public List<Sistema> GetSistemasPorPlanta(int idPlanta)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                return cntx.Sistemas.Where(p => p.PlantaId == idPlanta).ToList();
+            }
         }
     }
 }
