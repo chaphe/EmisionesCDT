@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestEmisionesCDT.Helper
+namespace TestBackendEmisiones.Helper
 {
     internal class HttpHelper
     {

@@ -10,12 +10,20 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Numerics;
 
 
-namespace TestEmisionesCDT.Fixture
+namespace TestBackendEmisiones.Fixture
 {
     public class WebApplicationFactoryFixture : IAsyncLifetime
     {
         //private const string _connectionString = @$"Server=localhost\\SQLEXPRESS;Database=CDTNueva;Trusted_Connection=true;TrustServerCertificate=true;";
         private const string _connectionString = "Server=localhost\\SQLEXPRESS;Database=CDTNueva;Trusted_Connection=true;TrustServerCertificate=true;";
+
+        const int NumeroEmpresas = 10;
+        const int NumeroPlantas = 30;
+        const int NumeroSistemas = 90;
+        const int NumeroEmisionesCombustion = 1800;
+        const int NumeroEmisionesFugitivas = 1800;
+        const int NumeroEvidencias = 200;
+
 
         public WebApplicationFactory<Program> Factory { get; private set; }
 
@@ -43,7 +51,6 @@ namespace TestEmisionesCDT.Fixture
             {
                 var scopedServices = scope.ServiceProvider;
                 var cntx = scopedServices.GetRequiredService<DataContext>();
-
                 await cntx.Database.EnsureDeletedAsync();
             }
         }
@@ -57,13 +64,92 @@ namespace TestEmisionesCDT.Fixture
 
                 await cntx.Database.EnsureCreatedAsync();
 
-                await cntx.Empresas.AddRangeAsync(DataFixture.GetEmpresas(5));
+                await cntx.FactoresEmision.AddRangeAsync(CrearFactoresEmision());
                 await cntx.SaveChangesAsync();
-                await cntx.Plantas.AddRangeAsync(DataFixture.GetPlantas(20, MaxIdEmpresa(cntx.Empresas)));
+                await cntx.TipoFuente.AddRangeAsync(CrearTiposFuente());
                 await cntx.SaveChangesAsync();
-                await cntx.Sistemas.AddRangeAsync(DataFixture.GetSistemas(80, MaxIdPlanta(cntx.Plantas)));
+                await cntx.Empresas.AddRangeAsync(DataFixture.GetEmpresas(NumeroEmpresas));
+                await cntx.SaveChangesAsync();
+                await cntx.Plantas.AddRangeAsync(DataFixture.GetPlantas(NumeroPlantas, NumeroEmpresas));
+                await cntx.SaveChangesAsync();
+                await cntx.Sistemas.AddRangeAsync(DataFixture.GetSistemas(NumeroSistemas, NumeroPlantas));
+                await cntx.SaveChangesAsync();
+                await cntx.EmisionesCombustion.AddRangeAsync(DataFixture.GetEmisionesCombustion(NumeroEmisionesCombustion, NumeroSistemas));
+                await cntx.SaveChangesAsync();
+                await cntx.EmisionesFugitivas.AddRangeAsync(DataFixture.GetEmisionesFugitivas(NumeroEmisionesFugitivas, NumeroSistemas));
+                await cntx.SaveChangesAsync();
+                await cntx.Evidencias.AddRangeAsync(DataFixture.GetEvidencias(NumeroEvidencias, NumeroEmisionesFugitivas));
                 await cntx.SaveChangesAsync();
             }
+        }
+
+        private List<TipoFuente> CrearTiposFuente()
+        {
+            var lista = new List<TipoFuente>();
+            lista.Add(new TipoFuente
+            {
+                IdClasificacion = 1,
+                Nombre = "Motor de compresor",
+                TipoEmision = 2
+            });
+            lista.Add(new TipoFuente
+            {
+                IdClasificacion = 1,
+                Nombre = "Motor de generador",
+                TipoEmision = 2
+            });
+            lista.Add(new TipoFuente
+            {
+                IdClasificacion = 1,
+                Nombre = "Horno",
+                TipoEmision = 1
+            });
+            lista.Add(new TipoFuente
+            {
+                IdClasificacion = 1,
+                Nombre = "Caldera Calentador",
+                TipoEmision = 1
+            });
+            lista.Add(new TipoFuente
+            {
+                IdClasificacion = 1,
+                Nombre = "Tea",
+                TipoEmision = 1
+            });
+            return lista;
+        }
+        private List<FactorEmision> CrearFactoresEmision()
+        {
+            var lista = new List<FactorEmision>();
+            lista.Add(new FactorEmision
+            {
+                NombreGas = "Gas Natural",
+                ValorCh4fugitivas = 11.7m,
+                ValorCo2fugitivas = 2.2m,
+                ValorCo2combustion = 294.6m
+            });
+            lista.Add(new FactorEmision
+            {
+                NombreGas = "Gas Rico Apiai",
+                ValorCh4fugitivas = 15.6m,
+                ValorCo2fugitivas = 2.8m,
+                ValorCo2combustion = 393.4m
+            });
+            lista.Add(new FactorEmision
+            {
+                NombreGas = "Gas Seco Apiai",
+                ValorCh4fugitivas = 15.8m,
+                ValorCo2fugitivas = 2.1m,
+                ValorCo2combustion = 396.6m
+            });
+            lista.Add(new FactorEmision
+            {
+                NombreGas = "Gas Seco Cusiana",
+                ValorCh4fugitivas = 17.2m,
+                ValorCo2fugitivas = 2.8m,
+                ValorCo2combustion = 398.8m
+            });
+            return lista;
         }
 
         private int MaxIdEmpresa(DbSet<Empresa> set)
@@ -107,6 +193,16 @@ namespace TestEmisionesCDT.Fixture
                 var randomElement = cntx.Empresas.OrderBy(c => Guid.NewGuid())
                                         .FirstOrDefault();
                 return randomElement;
+            }
+        }
+
+        public Empresa GetEmpresaPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Empresas.Find(id);
             }
         }
 
@@ -185,5 +281,105 @@ namespace TestEmisionesCDT.Fixture
                 return cntx.Sistemas.Where(p => p.PlantaId == idPlanta).ToList();
             }
         }
+
+        public EmisionCombustion GetEmisionCombustionPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.EmisionesCombustion.Find(id);
+            }
+        }
+
+        public EmisionCombustion GetRandomEmisionCombustion()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                var randomElement = cntx.EmisionesCombustion.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public List<EmisionCombustion> GetEmisionCombustionPorSistema(int idSistema)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                return cntx.EmisionesCombustion.Where(e => e.SistemaId == idSistema).ToList();
+            }
+        }
+
+        public EmisionFugitiva GetEmisionFugitivaPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.EmisionesFugitivas.Find(id);
+            }
+        }
+
+        public EmisionFugitiva GetRandomEmisionFugitiva()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                var randomElement = cntx.EmisionesFugitivas.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public List<EmisionFugitiva> GetEmisionFugitivaPorSistema(int idSistema)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                return cntx.EmisionesFugitivas.Where(e => e.SistemaId == idSistema).ToList();
+            }
+        }
+
+        public Evidencia GetEvidenciaPorId(int id)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                return cntx.Evidencias.Find(id);
+            }
+        }
+
+        public Evidencia GetRandomEvidencia()
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+                var randomElement = cntx.Evidencias.OrderBy(c => Guid.NewGuid())
+                                        .FirstOrDefault();
+                return randomElement;
+            }
+        }
+
+        public List<Evidencia> GetEvidenciasPorEmision(int idEmision)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var cntx = scopedServices.GetRequiredService<DataContext>();
+
+                return cntx.Evidencias.Where(p => p.EmisionFugitivaId == idEmision).ToList();
+            }
+        }
+
     }
 }

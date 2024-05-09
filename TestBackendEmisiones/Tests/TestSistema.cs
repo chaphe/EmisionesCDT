@@ -1,14 +1,12 @@
-﻿using BackendEmisiones.Data;
-using BackendEmisiones.Models;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BackendEmisiones.Models;
 using Newtonsoft.Json;
 using System.Net;
-using TestEmisionesCDT.Fixture;
-using TestEmisionesCDT.Helper;
+using TestBackendEmisiones.Fixture;
+using TestBackendEmisiones.Helper;
 
-namespace TestEmisionesCDT.Tests
+namespace TestBackendEmisiones.Tests
 {
-    [Collection("EmisionCDT Collection")]
+    [Collection("Backend EmisionCDT Collection")]
     public class TestSistema
     {
         private readonly WebApplicationFactoryFixture _fixture;
@@ -23,12 +21,7 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var sistema = new Sistema //DTO que se envia como JSON
-            {
-                Nombre = "Almacenamiento GLP",
-                Descripcion = "Amnto GLP - Acacias 1",
-                PlantaId = 1
-            };
+            var sistema = CrearSistemaDTO();
             var content = HttpHelper.GetJsonHttpContent(sistema);
 
             // Act
@@ -51,12 +44,7 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var sistema = new Sistema //DTO que se envia como JSON
-            {
-                Nombre = "Almacenamiento GLP",
-                Descripcion = "Amnto GLP - Acacias 1",
-                PlantaId = 10000
-            };
+            var sistema = CrearSistemaDTO(1, 10000);
 
             // Act
             var content = HttpHelper.GetJsonHttpContent(sistema);
@@ -75,13 +63,7 @@ namespace TestEmisionesCDT.Tests
             // Arrange
             var client = _fixture.Client;
             var sistemaDB = _fixture.GetRandomSistema();
-            var sistema = new Sistema //DTO que se envia como JSON
-            {
-                Id = sistemaDB.Id,
-                Nombre = "Almacenamiento GLP Nuevo",
-                Descripcion = "Almacenamiento GLP - Acacias 1",
-                PlantaId = sistemaDB.PlantaId
-            };
+            var sistema = CrearSistemaDTO(sistemaDB.Id, sistemaDB.PlantaId);
 
             // Act
             var content = HttpHelper.GetJsonHttpContent(sistema);
@@ -105,15 +87,8 @@ namespace TestEmisionesCDT.Tests
         public async Task ActualizarSistemaNoExistente()
         {
             // Arrange
-            var client = _fixture.Client;          
-
-            var sistema = new Sistema //DTO que se envia como JSON
-            {
-                Id = 10000,
-                Nombre = "Almacenamiento GLP Nuevo",
-                Descripcion = "Almacenamiento GLP - Acacias 1",
-                PlantaId = 1
-            };
+            var client = _fixture.Client;
+            var sistema = CrearSistemaDTO(10000);
 
             // Act
             var content = HttpHelper.GetJsonHttpContent(sistema);
@@ -162,12 +137,11 @@ namespace TestEmisionesCDT.Tests
         }
 
         [Fact(DisplayName = "Consultar Conjunto de Sistemas")]
-        public async Task ConsultaConjuntoPlantas()
+        public async Task ConsultarConjuntoSistemas()
         {
             // Arrange
             var client = _fixture.Client;
             var plantaDB = _fixture.GetRandomPlanta();
-
 
             // Act
             var response = await client.GetAsync("api/Sistema/GetSet/" + plantaDB.Id);
@@ -180,6 +154,16 @@ namespace TestEmisionesCDT.Tests
             Assert.Equal(sistemasDB.Count(), sistemasRta.Count());
         }
 
+        private Sistema CrearSistemaDTO(int id=1, int plantaId=1)
+        {
+            return new Sistema
+            {
+                Id = id,
+                Nombre = "Almacenamiento GLP",
+                Descripcion = "Amnto GLP - Acacias 1",
+                PlantaId = plantaId
+            };
+        } 
 
     }
 }

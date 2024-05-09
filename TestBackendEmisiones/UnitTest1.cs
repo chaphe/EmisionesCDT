@@ -11,7 +11,7 @@ using System.Text.Json.Nodes;
 using System.Text;
 using Xunit.Abstractions;
 
-namespace TestEmisionesCDT
+namespace TestBackendEmisiones
 {
     public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     {

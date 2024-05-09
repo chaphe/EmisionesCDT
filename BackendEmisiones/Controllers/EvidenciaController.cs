@@ -92,6 +92,7 @@ namespace BackendEmisiones.Controllers
             evidencia.FechaDeteccion = updatedEvidencia.FechaDeteccion;
             evidencia.FechaReparacion = updatedEvidencia.FechaReparacion;
             evidencia.UsuarioDeteccionId = updatedEvidencia.UsuarioDeteccionId;
+            evidencia.UsuarioReparacionId = updatedEvidencia.UsuarioReparacionId;
             evidencia.EmisionFugitivaId = updatedEvidencia.EmisionFugitivaId;
             evidencia.FotoAntes = updatedEvidencia.FotoAntes;
             evidencia.FotoDespues = updatedEvidencia.FotoDespues;

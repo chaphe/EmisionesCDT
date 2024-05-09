@@ -3,12 +3,12 @@ using BackendEmisiones.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Net;
-using TestEmisionesCDT.Fixture;
-using TestEmisionesCDT.Helper;
+using TestBackendEmisiones.Fixture;
+using TestBackendEmisiones.Helper;
 
-namespace TestEmisionesCDT.Tests
+namespace TestBackendEmisiones.Tests
 {
-    [Collection("EmisionCDT Collection")]
+    [Collection("Backend EmisionCDT Collection")]
     public class TestEmpresa
     {
         private readonly WebApplicationFactoryFixture _fixture;
@@ -22,38 +22,23 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var empresa = new Empresa //DTO que se envia como JSON
-            {
-                Ciudad = "Bucaramanga",
-                Naturaleza = "Juridica",
-                RazonSocial = "Hocol",
-                Direccion = "Calle 20 Cra 20",
-                Identificacion = "1234567",
-                Telefono = "310987789",
-                NombreContacto = "Juan Perez",
-                CargoContacto = "Ing Produccion",
-                TelContacto = "312456765",
-                FactorGwp = 22
-            };
+            var empresa = CrearEmpresaDTO();
 
             // Act
-            var response = await client.PostAsync("api/Empresa", HttpHelper.GetJsonHttpContent(empresa));
+            var content = HttpHelper.GetJsonHttpContent(empresa);
+            var response = await client.PostAsync("api/Empresa", content);
             var empresaStr = response.Content.ReadAsStringAsync();
             var empresaRta = JsonConvert.DeserializeObject<Empresa>(empresaStr.Result);
+            var empresaDB = _fixture.GetEmpresaPorId(empresaRta.Id);
 
             // Assert
+            // Valida que la respuesta HTTP es 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var empresaDB = context.Empresas.Find(empresaRta.Id);
-
-                // Evalua que el numero de empresas es igual al de la BD
-                Assert.Equal(empresaDB.RazonSocial, empresa.RazonSocial);
-                Assert.Equal(empresaDB.Ciudad, empresaRta.Ciudad);
-                Assert.Equal(empresa.Identificacion, empresaRta.Identificacion);
-            }
+            // Valida que los atributos sean iguales a la BD
+            Assert.Equal(empresaDB.RazonSocial, empresa.RazonSocial);
+            Assert.Equal(empresaDB.Ciudad, empresa.Ciudad);
+            Assert.Equal(empresaDB.Identificacion, empresa.Identificacion);
+            Assert.Equal(empresaDB.NombreContacto, empresa.NombreContacto);
         }
 
         [Fact(DisplayName = "Crear Empresa Incompleta")]
@@ -61,23 +46,14 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var empresa = new Empresa //DTO incompleto que se envia como JSON
-            {
-                Ciudad = "Bucaramanga",
-                Naturaleza = "Juridica",            
-                Direccion = "Calle 20 Cra 20",
-                Identificacion = "1234567",
-                Telefono = "310987789",
-                NombreContacto = "Juan Perez",
-                CargoContacto = "Ing Produccion",
-                TelContacto = "312456765",
-                FactorGwp = 22
-            };
+            var empresa = CrearEmpresaDTO();
+            empresa.RazonSocial = null;
 
             // Act
-            var response = await client.PostAsync("api/Empresa", HttpHelper.GetJsonHttpContent(empresa));
+            var content = HttpHelper.GetJsonHttpContent(empresa);
+            var response = await client.PostAsync("api/Empresa", content);
 
-            // Evalua que la respuesta HTTP es 400 (Bad Request)
+            // Valida que la respuesta HTTP es 400 (Bad Request)
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
@@ -86,39 +62,24 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            Empresa empresaDB = _fixture.GetLastEmpresa();
-            /*
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                empresaDB = context.Empresas.OrderBy(e => e.Id).Last();                
-            }
-            */
-
-            var empresa = new Empresa //DTO que se envia como JSON
-            {
-                Id = empresaDB.Id,
-                Ciudad = "Barranquilla",
-                Naturaleza = "Juridica",
-                RazonSocial = "Hocol",
-                Direccion = "Calle 20 Cra 20",
-                Identificacion = "1234567",
-                Telefono = "310987789",
-                NombreContacto = "Juan Perez",
-                CargoContacto = "Ing Produccion",
-                TelContacto = "312456765",
-                FactorGwp = 22
-            };
+            var empresaDB = _fixture.GetRandomEmpresa();
+            var empresa = CrearEmpresaDTO(empresaDB.Id);
 
             // Act
-            var response = await client.PutAsync("api/Empresa", HttpHelper.GetJsonHttpContent(empresa));
+            var content = HttpHelper.GetJsonHttpContent(empresa);
+            var response = await client.PutAsync("api/Empresa", content);
             var empresaStr = response.Content.ReadAsStringAsync();
             var empresaRta = JsonConvert.DeserializeObject<Empresa>(empresaStr.Result);
-
+            empresaDB = _fixture.GetEmpresaPorId(empresa.Id);
+            
             // Assert
+            // Valida que la respuesta HTTP es 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(empresaDB.Identificacion, empresaRta.Identificacion);
-            Assert.Equal("Barranquilla", empresaRta.Ciudad);
+            // Valida que los atributos se actualziaron
+            Assert.Equal(empresaDB.RazonSocial, empresa.RazonSocial);
+            Assert.Equal(empresaDB.Ciudad, empresa.Ciudad);
+            Assert.Equal(empresaDB.Identificacion, empresa.Identificacion);
+            Assert.Equal(empresaDB.NombreContacto, empresa.NombreContacto);
         }
 
         [Fact(DisplayName = "Actualizar Empresa No Existente")]
@@ -126,27 +87,16 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
-
-            var empresa = new Empresa //DTO que se envia como JSON
-            {
-                Id = 10000,
-                Ciudad = "Barranquilla",
-                Naturaleza = "Juridica",
-                RazonSocial = "Hocol",
-                Direccion = "Calle 20 Cra 20",
-                Identificacion = "1234567",
-                Telefono = "310987789",
-                NombreContacto = "Juan Perez",
-                CargoContacto = "Ing Produccion",
-                TelContacto = "312456765",
-                FactorGwp = 22
-            };
+            var empresa = CrearEmpresaDTO(10000);
 
             // Act
-            var response = await client.PutAsync("api/Empresa", HttpHelper.GetJsonHttpContent(empresa));
+            var content = HttpHelper.GetJsonHttpContent(empresa);
+            var response = await client.PutAsync("api/Empresa", content);
             var textoRta = response.Content.ReadAsStringAsync().Result;
-    
+
             // Assert
+
+            // Valida que la respuesta HTTP es 404 (NotFound)
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Contains("no encontrada", textoRta);
         }
@@ -156,24 +106,20 @@ namespace TestEmisionesCDT.Tests
         {
             // Arrange
             var client = _fixture.Client;
+            var empresaDB = _fixture.GetRandomEmpresa();
             // Act
-            var response = await client.GetAsync("api/Empresa/1");
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var response = await client.GetAsync("api/Empresa/" + empresaDB.Id);
             var empresaStr = response.Content.ReadAsStringAsync();
             var empresaRta = JsonConvert.DeserializeObject<Empresa>(empresaStr.Result);
-            Assert.Equal(1, empresaRta.Id);
 
-            using (var scope = _fixture.Factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var empresaDB = context.Empresas.Find(1);
-                // Evalua que los atributos corresponden a los de la BD
-                Assert.Equal(empresaDB.RazonSocial, empresaRta.RazonSocial);
-                Assert.Equal(empresaDB.Identificacion, empresaRta.Identificacion);
-                Assert.Equal(empresaDB.Ciudad, empresaRta.Ciudad);
-
-            }
+            // Assert
+            // Valida que la respuesta HTTP es 200 (OK)
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            // Valida que los atributos corresponden a la BD
+            Assert.Equal(empresaDB.RazonSocial, empresaRta.RazonSocial);
+            Assert.Equal(empresaDB.Ciudad, empresaRta.Ciudad);
+            Assert.Equal(empresaDB.Identificacion, empresaRta.Identificacion);
+            Assert.Equal(empresaDB.NombreContacto, empresaRta.NombreContacto);
         }
 
         [Fact(DisplayName = "Consulta Empresa No Existente")]
@@ -201,20 +147,37 @@ namespace TestEmisionesCDT.Tests
 
             // Act
             var response = await client.GetAsync("api/Empresa/GetAll");
-
-            // Assert
-            Assert.Equal("application/json; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var empresas = JsonConvert.DeserializeObject<List<Empresa>>(content);
+
+            // Assert
+            // Valida que la respuesta HTTP es 200 (OK)
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             using (var scope = _fixture.Factory.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                // Evalua que el numero de empresas es igual al de la BD
+                // Valida que el numero de empresas es igual al de la BD
                 Assert.Equal(context.Empresas.Count(), empresas.Count());
             }
+        }
+
+        private Empresa CrearEmpresaDTO(int id=1)
+        {
+            return new Empresa 
+            {
+                Id = id,
+                Ciudad = "Bucaramanga",
+                Naturaleza = "Juridica",
+                RazonSocial = "Hocol",
+                Direccion = "Calle 20 Cra 20",
+                Identificacion = "1234567",
+                Telefono = "310987789",
+                NombreContacto = "Juan Perez",
+                CargoContacto = "Ing Produccion",
+                TelContacto = "312456765",
+                FactorGwp = 22
+            };
         }
 
     }

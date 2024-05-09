@@ -8,12 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using TestEmisionesCDT.Fixture;
-using TestEmisionesCDT.Helper;
+using TestBackendEmisiones.Fixture;
+using TestBackendEmisiones.Helper;
 
-namespace TestEmisionesCDT.Tests
+namespace TestBackendEmisiones.Tests
 {
-    [Collection("EmisionCDT Collection")]
+    [Collection("Backend EmisionCDT Collection")]
     public class TestPlanta
     {
         private readonly WebApplicationFactoryFixture _fixture;

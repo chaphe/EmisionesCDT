@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TestEmisionesCDT.Fixture;
+using TestBackendEmisiones.Fixture;
 
-namespace TestEmisionesCDT.Tests
+namespace TestBackendEmisiones.Tests
 {
-    [CollectionDefinition("EmisionCDT Collection")]
+    [CollectionDefinition("Backend EmisionCDT Collection")]
     public class TestCollection : IClassFixture<WebApplicationFactoryFixture>
     {
     }
