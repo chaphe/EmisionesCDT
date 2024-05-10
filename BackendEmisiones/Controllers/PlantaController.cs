@@ -25,10 +25,12 @@ namespace BackendEmisiones.Controllers
         [HttpGet("GetSet/{EmpresaId}")]
         public ActionResult<List<Planta>> GetSetPlantas(int EmpresaId)
         {
-            var plantas = _context.Plantas.Where(p => p.EmpresaId == EmpresaId).ToList();
-            if (plantas.IsNullOrEmpty())
-                return NotFound("No se encontraron plantas para esa empresa");
-
+            var empresa = _context.Empresas.Find(EmpresaId); 
+            if (empresa is null)
+                return NotFound("No existe la empresa cosultada");
+            
+            var plantas = _context.Plantas
+                .Where(p => p.EmpresaId == EmpresaId).ToList();
             return Ok(plantas);
         }
 

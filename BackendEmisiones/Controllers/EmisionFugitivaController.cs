@@ -25,10 +25,12 @@ namespace BackendEmisiones.Controllers
         [HttpGet("GetSet/{SistemaId}")]
         public ActionResult<List<EmisionFugitiva>> GetSetEmisiones(int SistemaId)
         {
-            var emisiones = _context.EmisionesFugitivas.Where(ef => ef.SistemaId == SistemaId).ToList();
-            if (emisiones.IsNullOrEmpty())
-                return NotFound("No se encontraron emisiones para ese Sistema");
+            var sistema = _context.Sistemas.Find(SistemaId);
+            if (sistema is null)
+                return NotFound("No existe el sistema consultado");
 
+            var emisiones = _context.EmisionesFugitivas
+                .Where(ef => ef.SistemaId == SistemaId).ToList();
             return Ok(emisiones);
         }
 

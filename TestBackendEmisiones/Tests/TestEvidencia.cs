@@ -1,7 +1,9 @@
-﻿using BackendEmisiones.Dtos;
+﻿using Azure;
+using BackendEmisiones.Dtos;
 using BackendEmisiones.Models;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 using TestBackendEmisiones.Fixture;
 using TestBackendEmisiones.Helper;
 
@@ -167,16 +169,50 @@ namespace TestBackendEmisiones.Tests
             Assert.Equal(evidenciasDB.Count(), sistemasRta.Count());
         }
 
-        private Sistema CrearSistemaDTO(int id=1, int plantaId=1)
+        [Fact(DisplayName = "Consultar Archivo Deteccion")]
+        public async Task ConsultarArchivoDeteccion()
         {
-            return new Sistema
-            {
-                Id = id,
-                Nombre = "Almacenamiento GLP",
-                Descripcion = "Amnto GLP - Acacias 1",
-                PlantaId = plantaId
-            };
+            // Arrange
+            var client = _fixture.Client;
+
+            // Act
+            var response = await client.GetAsync("Imagen/Deteccion/1");
+            string contentType = response.Content.Headers.ContentType.MediaType;
+
+            // Assert
+            Assert.Equal("image/jpeg", contentType);
         }
+
+        //[Fact(DisplayName = "Enviar Archivo Deteccion")]
+        public async Task EnviarArchivoDeteccion()
+        {
+            // Arrange
+            var client = _fixture.Client;
+
+            string path = AppDomain.CurrentDomain.BaseDirectory;
+            path = path + @"Imagenes\Deteccion.jpg";
+            
+
+            using (var fileStream = File.OpenRead(path))
+            {
+                
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+                var formData = new MultipartFormDataContent();
+                formData.Add(fileContent, "archivo", Path.GetFileName(path));
+
+                var response = await client.PostAsync("api/Evidencia/SubirImagen/Deteccion?EvidenciaID=2", formData);
+
+                // Assert
+                var textoRta = response.Content.ReadAsStringAsync().Result;
+
+                // Evalua que el código de respuesta sea 200 (OK)
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal("El archivo se subio correctamente", textoRta);
+            }
+        }
+
 
         private Evidencia CrearEvidenciaDTO(int id = 1, int emisionId = 1)
         {

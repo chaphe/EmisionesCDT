@@ -43,10 +43,12 @@ namespace BackendEmisiones.Controllers
         [HttpGet("GetSet/{EmisionId}")]
         public ActionResult<List<Evidencia>> GetSetPlantas(int EmisionId)
         {
-            var evidencias = _context.Evidencias.Where(e => e.EmisionFugitivaId == EmisionId).ToList();
-            if (evidencias.IsNullOrEmpty())
-                return NotFound("No se encontraron plantas para esa empresa");
-
+            var emision = _context.EmisionesFugitivas.Find(EmisionId);
+            if (emision is null)
+                return NotFound("No existe la emision consultada");
+            
+            var evidencias = _context.Evidencias
+                .Where(e => e.EmisionFugitivaId == EmisionId).ToList();
             return Ok(evidencias);
         }
 
