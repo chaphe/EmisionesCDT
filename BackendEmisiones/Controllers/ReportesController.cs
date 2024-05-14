@@ -21,7 +21,7 @@ namespace BackendEmisiones.Controllers
         }
 
 
-        [HttpGet("Mensual/{{id}}")]
+        [HttpGet("Mensual/{id}")]
         public ActionResult<ReporteMensual> GetReporteMensualById(int id)
         {
             var reporte = _context.ReporteMensual.Include(rm => rm.Items).FirstOrDefault(rm => rm.Id == id);
@@ -33,7 +33,7 @@ namespace BackendEmisiones.Controllers
             return Ok(reporte);
         }
 
-        [HttpGet("MensualGas/{{id}}")]
+        [HttpGet("MensualGas/{id}")]
         public ActionResult<ReporteMensualGas> GetReporteMensualGasById(int id)
         {
             var reporte = _context.ReporteMensualGas.Include(rm => rm.Items).FirstOrDefault(rm => rm.Id == id);

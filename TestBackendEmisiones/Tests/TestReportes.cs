@@ -42,6 +42,43 @@ namespace TestBackendEmisiones.Tests
 
         }
 
+        [Fact(DisplayName = "Consultar Reporte Mensual No Existente")]
+        public async Task ConsultarReporteMensualNoExistente()
+        {
+            // Arrange
+            var client = _fixture.Client;
+
+
+            // Act
+            var response = await client.GetAsync("api/Reportes/Mensual/10000");
+            var textoRta = response.Content.ReadAsStringAsync().Result;
+
+
+            // Assert
+            // Valida que el código de respuesta sea 404 (No encontrado)
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Contains("no encontrado", textoRta);
+        }
+
+        [Fact(DisplayName = "Consultar Reporte Mensual Gas No Existente")]
+        public async Task ConsultarReporteMensualGasNoExistente()
+        {
+            // Arrange
+            var client = _fixture.Client;
+
+
+            // Act
+            var response = await client.GetAsync("api/Reportes/MensualGas/10000");
+            var textoRta = response.Content.ReadAsStringAsync().Result;
+
+
+            // Assert
+            // Valida que el código de respuesta sea 404 (No encontrado)
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Contains("no encontrado", textoRta);
+        }
+
+
         [Fact(DisplayName = "Generar Reportar Mensual Planta No Existente")]
         public async Task GenerarReporteMensualPlantaNoExistente()
         {
@@ -142,16 +179,7 @@ namespace TestBackendEmisiones.Tests
         }
 
 
-        private Sistema CrearSistemaDTO(int id=1, int plantaId=1)
-        {
-            return new Sistema
-            {
-                Id = id,
-                Nombre = "Almacenamiento GLP",
-                Descripcion = "Amnto GLP - Acacias 1",
-                PlantaId = plantaId
-            };
-        }
+
 
         private GenerarReporteMensualDto CrearReporteMensualDTO(int plantaId)
         {
