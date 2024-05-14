@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Numerics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace TestBackendEmisiones.Fixture
@@ -68,6 +69,10 @@ namespace TestBackendEmisiones.Fixture
                 await cntx.SaveChangesAsync();
                 await cntx.TipoFuente.AddRangeAsync(CrearTiposFuente());
                 await cntx.SaveChangesAsync();
+                await cntx.ReporteMensual.AddRangeAsync(CrearReportesMensual());
+                await cntx.SaveChangesAsync();
+                await cntx.ReporteMensualGas.AddRangeAsync(CrearReportesMensualGas());
+                await cntx.SaveChangesAsync();
                 await cntx.Empresas.AddRangeAsync(DataFixture.GetEmpresas(NumeroEmpresas));
                 await cntx.SaveChangesAsync();
                 await cntx.Plantas.AddRangeAsync(DataFixture.GetPlantas(NumeroPlantas, NumeroEmpresas));
@@ -83,95 +88,80 @@ namespace TestBackendEmisiones.Fixture
             }
         }
 
+        private List<ReporteMensual> CrearReportesMensual()
+        {
+            var lista = new List<ReporteMensual>();
+            lista.Add(new ReporteMensual
+            {
+                EmpresaId = 1,
+                Empresa = "Ecopetrol",
+                PlantaId = 1,
+                Planta = "Acacias",
+                Anho = 2023,
+                Mes = 1
+            });
+            return lista;
+        }
+
+        private List<ReporteMensualGas> CrearReportesMensualGas()
+        {
+            var lista = new List<ReporteMensualGas>();
+            lista.Add(new ReporteMensualGas
+            {
+                EmpresaId = 1,
+                Empresa = "Ecopetrol",
+                PlantaId = 1,
+                Planta = "Acacias",
+                GasId = 1,
+                Gas = "Gas Seco Apiai",
+                Anho = 2023,
+                Mes = 1
+            });
+            return lista;
+        }
+
         private List<TipoFuente> CrearTiposFuente()
         {
             var lista = new List<TipoFuente>();
-            lista.Add(new TipoFuente
-            {
-                IdClasificacion = 1,
-                Nombre = "Motor de compresor",
-                TipoEmision = 2
-            });
-            lista.Add(new TipoFuente
-            {
-                IdClasificacion = 1,
-                Nombre = "Motor de generador",
-                TipoEmision = 2
-            });
-            lista.Add(new TipoFuente
-            {
-                IdClasificacion = 1,
-                Nombre = "Horno",
-                TipoEmision = 1
-            });
-            lista.Add(new TipoFuente
-            {
-                IdClasificacion = 1,
-                Nombre = "Caldera Calentador",
-                TipoEmision = 1
-            });
-            lista.Add(new TipoFuente
-            {
-                IdClasificacion = 1,
-                Nombre = "Tea",
-                TipoEmision = 1
-            });
+            lista.Add(crearTipoFuente(1, "Motor de compresor", 2));
+            lista.Add(crearTipoFuente(1,"Motor de generador",2));       
+            lista.Add(crearTipoFuente(1, "Horno", 1));
+            lista.Add(crearTipoFuente(1, "Caldera Calentador", 1));
+            lista.Add(crearTipoFuente(1, "Tea", 1));
             return lista;
         }
+
+        private TipoFuente crearTipoFuente(int idClasificiacion, string nombre, int tipoEmision)
+        {
+            return new TipoFuente
+            {
+                IdClasificacion = idClasificiacion,
+                Nombre = nombre,
+                TipoEmision = tipoEmision
+            };
+        }
+        
         private List<FactorEmision> CrearFactoresEmision()
         {
             var lista = new List<FactorEmision>();
-            lista.Add(new FactorEmision
-            {
-                NombreGas = "Gas Natural",
-                ValorCh4fugitivas = 11.7m,
-                ValorCo2fugitivas = 2.2m,
-                ValorCo2combustion = 294.6m
-            });
-            lista.Add(new FactorEmision
-            {
-                NombreGas = "Gas Rico Apiai",
-                ValorCh4fugitivas = 15.6m,
-                ValorCo2fugitivas = 2.8m,
-                ValorCo2combustion = 393.4m
-            });
-            lista.Add(new FactorEmision
-            {
-                NombreGas = "Gas Seco Apiai",
-                ValorCh4fugitivas = 15.8m,
-                ValorCo2fugitivas = 2.1m,
-                ValorCo2combustion = 396.6m
-            });
-            lista.Add(new FactorEmision
-            {
-                NombreGas = "Gas Seco Cusiana",
-                ValorCh4fugitivas = 17.2m,
-                ValorCo2fugitivas = 2.8m,
-                ValorCo2combustion = 398.8m
-            });
+            lista.Add(crearFactorEmision("Gas Natural", 11.7m, 2.2m, 294.6m));
+            lista.Add(crearFactorEmision("Gas Rico Apiai", 15.6m, 2.8m, 393.4m));
+            lista.Add(crearFactorEmision("Gas Seco Apiai", 15.8m, 2.1m, 396.6m));
+            lista.Add(crearFactorEmision("Gas Seco Cusiana", 17.2m, 2.8m, 398.8m));
             return lista;
         }
 
-        private int MaxIdEmpresa(DbSet<Empresa> set)
+        private FactorEmision crearFactorEmision(string gas, decimal ch4fug, decimal co2fug, decimal co2com)
         {
-            return set.Select(x => x.Id)
-                    .DefaultIfEmpty() // Maneja el caso cuando no hay elementos en la tabla
-                    .Max();
+            return new FactorEmision
+            {
+                NombreGas = gas,
+                ValorCh4fugitivas = ch4fug,
+                ValorCo2fugitivas = co2fug,
+                ValorCo2combustion = co2com
+            };
         }
 
-        public int MaxIdPlanta(DbSet<Planta> set)
-        {
-            return set.Select(x => x.Id)
-                    .DefaultIfEmpty() // Maneja el caso cuando no hay elementos en la tabla
-                    .Max();
-        }
-
-        public int MaxIdSistema(DbSet<Sistema> set)
-        {
-            return set.Select(x => x.Id)
-                    .DefaultIfEmpty() // Maneja el caso cuando no hay elementos en la tabla
-                    .Max();
-        }
 
         public Empresa GetLastEmpresa()
         {

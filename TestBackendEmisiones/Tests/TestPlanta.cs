@@ -1,13 +1,6 @@
-﻿using BackendEmisiones.Data;
-using BackendEmisiones.Models;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BackendEmisiones.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TestBackendEmisiones.Fixture;
 using TestBackendEmisiones.Helper;
 
@@ -17,7 +10,6 @@ namespace TestBackendEmisiones.Tests
     public class TestPlanta
     {
         private readonly WebApplicationFactoryFixture _fixture;
-
         public TestPlanta(WebApplicationFactoryFixture fixture)
         {
             _fixture = fixture;
@@ -28,12 +20,7 @@ namespace TestBackendEmisiones.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            var planta = new Planta //DTO que se envia como JSON
-            {
-                Nombre = "Planta de Acacias",
-                Ciudad = "Acacias",
-                EmpresaId = 1
-            };
+            var planta = CrearPlantaDTO();
             var content = HttpHelper.GetJsonHttpContent(planta);
 
             // Act
@@ -46,7 +33,7 @@ namespace TestBackendEmisiones.Tests
             // Evalua que el çodigo HTTP de respuesta es 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var plantaDB = _fixture.GetPlantaPorId(plantaRta.Id);
- 
+
             // Valida que los atribitos son iguales a la BD
             Assert.Equal(plantaDB.Nombre, plantaRta.Nombre);
             Assert.Equal(plantaDB.Ciudad, plantaRta.Ciudad);
@@ -186,6 +173,17 @@ namespace TestBackendEmisiones.Tests
             var plantasDB = _fixture.GetPlantasPorEmpresa(empresaDB.Id);
             // Evalua que el numero de empresas es igual al de la BD
             Assert.Equal(plantasDB.Count(), plantasRta.Count());
+        }
+
+        private Planta CrearPlantaDTO(int id = 1, int empresaId = 1)
+        {
+            return new Planta
+            {
+                Id = id,
+                Nombre = "Planta de Acacias",
+                Ciudad = "Acacias",
+                EmpresaId = empresaId
+            };
         }
     }
 }
