@@ -30,16 +30,14 @@ namespace TestBackendEmisiones.Tests
             var response = await client.PostAsync("api/Reportes/Mensual", content);
             var reporteStr = response.Content.ReadAsStringAsync();
             var reporteRta = JsonConvert.DeserializeObject<ReporteMensual>(reporteStr.Result);
-            //var sistemaDB = _fixture.GetSistemaPorId(reporteRta.Id);
-            // Assert
 
+            // Assert
             // Valida que el çodigo HTTP de respuesta es 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             // Valida que los atributos en la BD son iguales al DTO
             Assert.Equal(reporte.PlantaID, reporteRta.PlantaId);
             Assert.Equal(reporte.Mes, reporteRta.Mes);
             Assert.Equal(reporte.Anho, reporteRta.Anho);
-
         }
 
         [Fact(DisplayName = "Consultar Reporte Mensual No Existente")]
@@ -48,11 +46,9 @@ namespace TestBackendEmisiones.Tests
             // Arrange
             var client = _fixture.Client;
 
-
             // Act
             var response = await client.GetAsync("api/Reportes/Mensual/10000");
             var textoRta = response.Content.ReadAsStringAsync().Result;
-
 
             // Assert
             // Valida que el código de respuesta sea 404 (No encontrado)
@@ -66,11 +62,9 @@ namespace TestBackendEmisiones.Tests
             // Arrange
             var client = _fixture.Client;
 
-
             // Act
             var response = await client.GetAsync("api/Reportes/MensualGas/10000");
             var textoRta = response.Content.ReadAsStringAsync().Result;
-
 
             // Assert
             // Valida que el código de respuesta sea 404 (No encontrado)
@@ -87,13 +81,12 @@ namespace TestBackendEmisiones.Tests
             var reporte = CrearReporteMensualDTO(10000);
             var content = HttpHelper.GetJsonHttpContent(reporte);
 
-
             // Act
             var response = await client.PostAsync("api/Reportes/Mensual", content);
             var textoStr = response.Content.ReadAsStringAsync().Result;
 
-
             // Assert
+            // Valida que el código de respuesta sea 404 (No encontrado)
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Contains("No existe", textoStr);
         }
@@ -130,13 +123,12 @@ namespace TestBackendEmisiones.Tests
             var reporte = CrearReporteMensualGasDTO(10000, 1);
             var content = HttpHelper.GetJsonHttpContent(reporte);
 
-
             // Act
             var response = await client.PostAsync("api/Reportes/MensualGas", content);
             var textoStr = response.Content.ReadAsStringAsync().Result;
 
-
             // Assert
+            // Valida que el código de respuesta sea 404 (No encontrado)
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Contains("No existe", textoStr);
         }
@@ -147,15 +139,14 @@ namespace TestBackendEmisiones.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            //var plantaDB = _fixture.GetRandomPlanta();
 
             // Act
             var response = await client.GetAsync("api/Reportes/Mensual/GetAll");
-            //var sistemasDB = _fixture.GetSistemasPorPlanta(plantaDB.Id);
             var content = await response.Content.ReadAsStringAsync();
             var reportesRta = JsonConvert.DeserializeObject<List<ReporteMensual>>(content);
 
             // Assert
+            // Valida que el código de respuesta sea 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(2, reportesRta.Count);
         }
@@ -165,21 +156,17 @@ namespace TestBackendEmisiones.Tests
         {
             // Arrange
             var client = _fixture.Client;
-            //var plantaDB = _fixture.GetRandomPlanta();
 
             // Act
             var response = await client.GetAsync("api/Reportes/MensualGas/GetAll");
-            //var sistemasDB = _fixture.GetSistemasPorPlanta(plantaDB.Id);
             var content = await response.Content.ReadAsStringAsync();
             var reportesRta = JsonConvert.DeserializeObject<List<ReporteMensualGas>>(content);
 
             // Assert
+            // Valida que el código de respuesta sea 200 (OK)
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(2, reportesRta.Count);
         }
-
-
-
 
         private GenerarReporteMensualDto CrearReporteMensualDTO(int plantaId)
         {
